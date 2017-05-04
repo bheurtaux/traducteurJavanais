@@ -11,29 +11,33 @@ public class ServiceTraductionJavanais implements IServiceTraduction{
 	final private static String SYLLABLE_PARASITAIRE="av";
 	
 	/**
-	 * Decode un texte
+	 * Decode un texte depuis du javanais
+	 * - Si le mot commence par "av"+voyelle, il faut retirer le "av"
+	 * - Si "av" est interposé entre une consonne et une voyelle, il faut le retirer
 	 */
 	@Override
 	public String decode(String textJavanais) {
 		StringBuilder textTraduit = new StringBuilder();
 		if(textJavanais!=null && textJavanais.length()>0){
 			int pos=0;
-			//Si le mot commence par "av" suivi d'une voyelle, on l'ignore
+			//Si le mot commence par "av" suivi d'une voyelle, il faut retirer le "av"
 			if(textJavanais.toUpperCase().startsWith(SYLLABLE_PARASITAIRE.toUpperCase()) &&
 					textJavanais.length()>=pos+3 &&
 					estVoyelle(textJavanais.toCharArray()[pos+2])){
 				pos=pos+2;
 			}
 			while(pos<textJavanais.length()){
+				//Ajout du caractère lu
 				final char c = textJavanais.toCharArray()[pos];
 				textTraduit.append(c);
-				//Si un "av" est interposé entre une consonne et une voyelle, on l'ignore
+				//Si un "av" est interposé entre une consonne et une voyelle, il faut retirer le "av"
 				if(!estVoyelle(c) && 
 						textJavanais.length()>=pos+4 &&
 						 SYLLABLE_PARASITAIRE.toUpperCase().equals(textJavanais.substring(pos+1, pos+3).toUpperCase()) &&
 						estVoyelle(textJavanais.toCharArray()[pos+3])){
 					pos=pos+2;
 				}
+				//increment de la position
 				pos++;
 			}
 		}
@@ -49,7 +53,7 @@ public class ServiceTraductionJavanais implements IServiceTraduction{
 	public String encode(String text) {
 		StringBuilder textJavanais = new StringBuilder();
 		if(text!=null && text.length()>0){
-			//Parcours des lettres du text fourni en entrée 
+			//Parcours des lettres du texte fourni en entrée 
 			int pos=0;
 			for(final char c : text.toCharArray()){
 				//Cas du premier caractère : 
@@ -67,7 +71,7 @@ public class ServiceTraductionJavanais implements IServiceTraduction{
 				if(!estVoyelle(c) && 
 					pos+1<text.length() &&
 					estVoyelle(text.toCharArray()[pos+1])){
-						//Dans ce cas, ajout du prefix "av"
+						//Alors, ajout du prefix "av"
 						textJavanais.append(SYLLABLE_PARASITAIRE);
 				}
 				//increment de la position
